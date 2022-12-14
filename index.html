@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content= "initial-scale=1">
+    <title>ファイル保存テスト</title>
+  </head>
+  <body>
+    <h1>ファイル保存</h1>
+    <form>
+      <input type="button" value="ファイル選択" id="open">
+    </form>
+    <div id="output"></div>
+    
+    <script>
+    	const target = document.getElementById("output");
+		const pickerOpts = {
+			types: [
+				{
+					description: 'PDF/TIFF Files',
+					accept: {
+					'application/pdf': ['.pdf'],
+					'application/tif': ['.tif']
+					}
+				},
+			],
+			excludeAcceptAllOption: true,
+			multiple: false
+		};
+
+		document.getElementById("open").addEventListener("click", async (e) => {
+			[fileHandle] = await window.showOpenFilePicker(pickerOpts);
+			const file = await fileHandle.getFile();
+			const fileContents = await file.arrayBuffer();
+			target.innerHTML = `file name : ${file.name}<br>file size : ${file.size}<br>`;
+			
+			const handle = await window.showSaveFilePicker({suggestedName: file.name} ,{types: pickerOpts});
+			const writable = await handle.createWritable();
+			await writable.write(fileContents);
+			await writable.close();
+		});
+	</script>
+  </body>
+</html>
